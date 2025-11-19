@@ -1,0 +1,54 @@
+# ----------------------------
+# VS Code files
+# ----------------------------
+.vscode/
+!.vscode/settings.json      # keep settings if you want
+!.vscode/tasks.json         # keep tasks if needed
+
+# ----------------------------
+# Java build outputs
+# ----------------------------
+*.class
+*.jar
+*.war
+*.zip
+
+# Maven (if using)
+target/
+
+# Gradle (if using)
+.gradle/
+build/
+
+# ----------------------------
+# Java JDK folder
+# (NEVER commit a JDK!)
+# ----------------------------
+OpenJDK-24/
+
+# ----------------------------
+# OS Generated Files
+# ----------------------------
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# ----------------------------
+# Logs and temp files
+# ----------------------------
+*.log
+*.tmp
+
+# ----------------------------
+# General backup or binary files
+# ----------------------------
+*.exe
+*.out
+*.o
+*.bak
