@@ -48,7 +48,7 @@ int pop(stack *st) {
         return -1;
     }
     node *temp = st->top;
-    int item = temp->data;
+    int item = temp->data;//st->top->data;
     st->top = st->top->next;
     free(temp);
     return item;
