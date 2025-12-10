@@ -1,312 +1,304 @@
-#include<stdio.h>
-#include<stdlib.h>
-struct node
-{
-    int data;//stores the data of the node
-    struct node *link;//self referential structure it is pointer to the next node
-};
-typedef struct node sll_node;
+#include <stdio.h>
+#include <stdlib.h>
 
-struct list {
-    sll_node *head;//pointer to the first node
+struct node {
+	int data;
+	struct node *link;
 };
 
-typedef struct list LIST;
+typedef struct node NODE;
 
-void init_list(LIST *ptr_list);//creates an empty list
-void insert_front(LIST *ptr_list, int data);
-void insert_end(LIST *ptr_list, int data);
-void insert_pos(LIST *ptr_list, int data, int pos);
-void display(LIST *ptr_list);
-int count_node_recur(sll_node *pres);
-int count_node(LIST *ptr_list);
-void delete_node(LIST *ptr_list, int data);
-void delete_pos(LIST *ptr_list, int pos);
-void ordered_insert(LIST *ptr_list, int data);
+NODE* create_node(int);
+void insert_at_front(int, NODE**);
+void insert_at_end(int, NODE**);
+void del_from_front(NODE**);
+void del_from_end(NODE**);
+void ins_at_pos(int ,int, NODE**);
+void del_at_pos(int, NODE**);
+void display(NODE*);
+void insert_in_order(int, NODE**);
+int find_key(int, NODE*);
+void list_reverse(NODE **);
 
-
-int main() 
+int main()
 {
-    LIST l;
-    init_list(&l);   // Initialize empty list
+	int choice,x,x1,pos;
+	NODE *start ;
+	start=NULL;
+	printf("Enter your choice \n1) Insert data at front of the list\n2) Insert data at end of the list\n3) Display the list");
+	printf("\n4) Delete data from front of the list\n5) Delete data from end of the list\n6) Insert data at a given position\n7) Delete data at a given position \n");
+	printf("8) Insert data in ordered manner \n9) Find the data \n10) Reverse Linked List");
+	while(1)
+	{
+		printf("\nEnter your choice\n");
+		scanf("%d", &choice);
+		switch(choice)
+		{
 
-    int n, ch, pos;
-    while (1)//for multiple execution of the while loop until users enter 10
-     {
-        printf("\n");
-        display(&l);  // Display current list
-        printf("\n1..Insert at head\n");
-        printf("2..Insert at end\n");
-        printf("3..Display\n");
-        printf("4..Insert at a given position\n");
-        printf("5..Count number of nodes (recursion)\n");
-        printf("6..Delete node by value\n");
-        printf("7..Delete node at a given position\n");
-        printf("8..Exit\n");
-        
+		case 1: {
+			printf("Enter the element");
+			scanf("%d", &x);
+			insert_at_front(x, &start);
+				}
+				break;
 
-        scanf("%d", &ch);  // Take user choice
+		case 2: {
+			printf("Enter the element");
+			scanf("%d", &x);
+			insert_at_end(x, &start);
+				}
+				break;
 
-        switch (ch) {
-        case 1:
-            printf("\nEnter the element to be inserted: ");
-            scanf("%d", &n);
-            insert_front(&l, n);
-            break;
-
-        case 2:
-            printf("\nEnter the element to be inserted: ");
-            scanf("%d", &n);
-            insert_end(&l, n);
-            break;
-
-        case 3:
-            display(&l);
-            break;
-
-        case 4:
-            printf("\nEnter the element and position: ");
-            scanf("%d %d", &n, &pos);
-            insert_pos(&l, n, pos);
-            break;
-
-        case 5:
-            printf("Counting nodes using recursion...\n");
-            int k = count_node(&l);
-            printf("The number of nodes = %d\n", k);
-            break;
-
-        case 6:
-            printf("Enter the element to be deleted: ");
-            scanf("%d", &n);
-            delete_node(&l, n);
-            break;
-
-        case 7:
-            printf("\nEnter the position to delete: ");
-            scanf("%d", &pos);
-            delete_pos(&l, pos);
-            break;
-        case 8:
-            printf("\nEnter the element to be inserted in order: ");
-            scanf("%d", &n);
-            ordered_insert(&l, n);
-            break;
-        case 9:
-            exit(0);
-        }
-    }
+		case 3: {
+			printf("The element in the list are: \t");
+			display(start);
+				}
+				break;
+		case 4: {
+			del_from_front(&start);
+			//printf("The deleted element is  %d\n", x1 );
+				}
+				break;
+		case 5: {
+			del_from_end(&start);
+			//printf("The deleted element is  %d\n", x1 );
+				}
+				break;
+		case 6: {
+			printf("Enter the element and its position to be inserted ");
+			scanf("%d%d",&x,&pos);
+			ins_at_pos(x,pos, &start);
+				}
+				break;
+		case 7: {
+			printf("Enter the position of the node to be deleted ");
+			scanf("%d", &pos);
+			del_at_pos(pos, &start);
+				}
+				break;
+		case 8: {
+			printf("Ordered Insertion\n Enter the element");
+			scanf("%d", &x);
+			insert_in_order(x, &start);
+				}
+				break;
+		case 9: {
+			printf("Search a key element");
+			scanf("%d", &x);
+			x=find_key(x, start);
+			if (x) printf("successful search");
+			else  printf("unsuccessful search");
+				}
+				break;
+                case 10: {
+                          list_reverse(&start);
+                          break;
+                         }
+                          
+		default: {
+			printf("Invalid choice \t"); 
+			exit(1);
+				 }
+				 break;
+		}
+	}
+	return(0);
 }
 
-    void init_list(LIST *ptr_list)//empty list
-    {
-       ptr_list->head=NULL;
-    }
+NODE* create_node(int x)
+{
+	NODE *new_node = (NODE *)(malloc(sizeof(NODE)));
+	new_node->data=x;
+	new_node->link=NULL;
+	return new_node;
+}
 
-    //insesrt at the beginning 
-    void insert_front(LIST *ptr_list,int data)
-    {
-        sll_node *temp=(sll_node *)malloc(sizeof(sll_node));//making a new node
-        temp->data=data;
-        temp->link=NULL;
-        //if the list is empty then the temp is the head and the link will not be affected it will be null
-        if(ptr_list->head==NULL)//checking the value of head is null
-        {
-            ptr_list->head=temp;//storing the value of temp to ptr_list
-        }
-        else
-        {
-        temp->link=ptr_list->head;//we are linking the temp to the head 
-        ptr_list->head=temp;//changing the pointer to temp
-        }
-    } 
+void insert_at_front(int x, NODE **pstart)
+{
+	NODE *new_node = create_node(x);
+	if (*pstart == NULL)
+		*pstart = new_node;
+	else {
+		new_node->link=*pstart;
+		*pstart=new_node;
+	}
+}
 
-    void display(LIST *ptr_list)
-    {
-        sll_node *pres = ptr_list->head;//we are storing the address pf the head
-        if(ptr_list->head==NULL)//the data is null
-        {
-            printf("\n Empty list.\n");
-        } 
-        else
-        {
-            while(pres != NULL)
-            {
-                printf("%d",pres->data);
-                pres=pres->link;
-            }
-        }
+void insert_at_end(int x, NODE **pstart)
+{
+	NODE *dstart;
+	NODE *new_node = create_node(x);
+	if( *pstart==NULL)
+		*pstart=new_node;
+	else {
+		dstart=*pstart;
+		while(dstart->link!=NULL)
+			dstart=dstart->link;
+		dstart->link=new_node;
+	}
+}
 
-    }
+void display(NODE* start)
+{
+	
+	if(start==NULL) 
+		printf("Empty List ");
+	else {
+		
+		printf("The List is.....\n");
+		while(start!=NULL)
+		{ 
+			printf("\t%d", start->data); 
+			start=start->link;
+		}     
+	}
+}
 
+void del_from_front(NODE** pstart)
+{
+	NODE *temp; 
+	int x;
+	if (*pstart == NULL)
+		printf("List is empty");
+	else {
+		temp=*pstart;
+		*pstart = (*pstart)->link;
+		printf("deleted element is %d",temp->data);
+		free(temp);
+		return; 
+	}
+}
 
-    void insert_end(LIST *ptr_list , int data)
-    {
-        sll_node *pres = ptr_list->head;//we are storing the address of the head
-        sll_node *temp = (sll_node*)malloc(sizeof(sll_node));//allocating memory to temp storing the data and setting the link to null
-        temp->data = data;
-        temp->link = NULL;
-        if(ptr_list->head==NULL)//checking whether the list is empty or not
-        {
-            ptr_list->head=temp;
-        }
-        else
-        {
-            while(pres->link!=NULL)
-            {
-                pres=pres->link;//traverssing till last node
-            }
-            pres->link=temp;//we put the adress of the new node to the last node
-        }
-    }
-
-
-    void insert_pos(LIST *ptr_list,int data,int pos)
-    {
-        sll_node *pres=ptr_list->head;//adress storing of the head node
-        sll_node *temp=(sll_node *)malloc(sizeof(sll_node));//making a temp node to store the data
-        temp->data = data;
-	    temp->link = NULL;
-        int i=1;
-        sll_node *prev=NULL;
-        while((pres!=NULL) && (i<pos))
-        {
-            i++;
-            prev=pres;
-            pres=pres->link;
-        }
-
-        if (pres != NULL) //position is found in between first and last node
-        {
-            if (prev == NULL) 
-            {  // inserting at position 1
-                temp->link = pres;
-                ptr_list->head = temp;
-            } 
-            else 
-            {  // inserting in middle anywhere
-                temp->link = pres;
-                prev->link = temp;
-            }
-        } 
-        else//pres is null
-            {
-                if (i == pos)  // inserting at end
-                    prev->link = temp;
-                else
-                    printf("\nInvalid position..\n");
-            }
-    }
-    int count_node(LIST *ptr_list)
-    {
-        sll_node *pres=ptr_list->head;
-        int count=0;
-        while(pres!=NULL)
-        {
-            count++;
-            pres=pres->link;
-        }
-        return count;
-    }
-
-    //using recurssion we are counting the nodes
-    int count_node_recur(sll_node *pres)
-    {
-	int count = 0;
-	if (pres->link == NULL) // only one node is present so return 1
-		return 1;
-	count = 1 + count_node_recur(pres->link);
-	return count;
-    }
-
-
-    //deleting the node by finding the data
-    void delete_node(LIST *ptr_list,int data)
-    {
-        sll_node *pres=ptr_list->head;
-        sll_node *prev=NULL;
-        while((pres!=NULL) && (pres->data != data))//traversing the pres until data is found or it points to the last node
-        {
-            prev=pres;
-            pres=pres->link;
-        }
-        if(pres!=NULL)//node exist with such data
-        {
-            if(prev==NULL)//it is the the first node
-            {
-                ptr_list->head=pres->link;//we move the ptr_head to the next node and then free the pres
-            }
-            else
-            {
-                prev->link=pres->link;
-            }
-            free(pres);
-        }
-        else
-            printf("NODE not found");
-    }
-
-
-    //deleting the node with respect to the position
-    void delete_pos(LIST *ptr_list, int pos)
-    {
-	sll_node *pres, *prev;
-	pres = ptr_list->head;
-	prev = NULL;
-
-	int i = 1;
-	// move forward until the postion is found
-	while ((pres != NULL) && (i < pos))
+void del_from_end(NODE** pstart)
+{
+	NODE  *prev,*dstart; 
+	int x;
+	if (  *pstart == NULL)
+		printf("List is empty");
+	else if((*pstart)->link==NULL)
 	{
-		i++;
-		prev = pres;
-		pres = pres->link;
+		dstart=*pstart;
+		*pstart=NULL;
+		free(dstart); 
+	}
+	else {
+		dstart=*pstart;
+		while(dstart->link!=NULL)
+		{
+			prev =dstart;
+			dstart=dstart->link;
+		}
+		prev->link=NULL;
+		printf(" The deleted element is %d", dstart->data);
+		free(dstart);
+	}
+}
+
+
+void ins_at_pos(int x,int pos, NODE** pstart)
+{
+	int i=1;
+	NODE *dstart, *prev, *new_node;
+	new_node = create_node(x);
+	 
+	if(pos==1) 
+	{
+		new_node->link = *pstart;
+		*pstart=new_node;
+	}
+	else  {
+		dstart=*pstart;
+		while(dstart->link!=NULL && i< pos)
+		{
+			prev = dstart;
+			dstart=dstart->link;i++;
+		}
+		if(pos == i)
+		{
+			new_node->link = dstart;
+			prev->link = new_node;
+		}
+		else if(++i==pos)
+			dstart->link=new_node;
+		else printf("Invalid Position");
+	}
+}
+
+void del_at_pos(int pos, NODE** pstart)
+{
+	int i=1; 
+	NODE *dstart, *prev;
+	if(*pstart==NULL) 
+		printf("Empty List");
+	else {
+		dstart=*pstart;
+		if(pos==1) 
+		{ 
+			*pstart = (*pstart)->link;
+			free(dstart);
+		}
+		else {  
+			while(dstart->link!=NULL && i< pos)
+			{ prev = dstart;
+			dstart=dstart->link; i++;
+			}
+			if(pos == i)
+			{  
+				prev->link = dstart->link;
+				free(dstart);
+			}
+			else printf("Invalid Position");
+		}
+	}
+}
+
+void insert_in_order(int x, NODE** pstart)
+{ // descending order insert
+	NODE *dstart, *prev, *new_node;
+	new_node = create_node(x);
+	if(*pstart==NULL) 
+		*pstart=new_node;
+	else if (new_node->data >= (*pstart)->data)
+	{
+		new_node->link=*pstart;
+		*pstart=new_node;
 	}
 
-	if (pres != NULL) // position found
-	{
-		// if first position
-		if (prev == NULL)
-			ptr_list->head = pres->link; // make head point to second node
-		else							 // not the first node
-			prev->link = pres->link;
-		free(pres);
+	else  {
+		dstart=*pstart;
+		while(dstart!=NULL && dstart->data > new_node->data)
+		{
+			prev = dstart;
+			dstart=dstart->link;
+		}
+		
+		new_node->link=dstart;
+		prev->link=new_node;
+		
 	}
-	else
-		printf("Invalid Position..\n");
-    }
-    
-    void ordered_insert(LIST *ptr_list, int data)
-    {
-        sll_node *pres = ptr_list->head;
-        sll_node *temp = (sll_node *)malloc(sizeof(sll_node));
-        temp->data = data;
-        temp->link = NULL;
-        sll_node *prev = NULL;
+}
 
-        // Traverse to find the correct position to insert
-        while ((pres != NULL) && (pres->data < data))
-        {
-            prev = pres;
-            pres = pres->link;
-        }
-
-        // Insert at the beginning
-        if (prev == NULL)
-        {
-            temp->link = ptr_list->head;
-            ptr_list->head = temp;
-        }
-        else // Insert in between or at the end
-        {
-            temp->link = pres;
-            prev->link = temp;
-        }
-    }
-
-
-
-
-
-
-
+int find_key(int key, NODE* start)
+{
+	if(start==NULL)
+          return 0;
+	while(start!=NULL)
+	{
+		if(start->data==key)return 1;
+		start=start->link;
+	}
+	return 0;
+}
+void list_reverse(NODE **pstart){
+	NODE *prev=NULL;
+	NODE *current;
+        current=*pstart;
+	NODE *next;
+	while (current!=NULL){
+		next=current->link;
+		current->link=prev;
+		prev=current;
+		current=next;
+	}
+	*pstart=prev;
+}
