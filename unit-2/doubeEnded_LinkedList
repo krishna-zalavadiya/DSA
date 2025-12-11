@@ -1,0 +1,148 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node {
+    int data;
+    struct node *next, *prev;
+} NODE;
+
+typedef struct dqueue {
+    NODE *front, *rear;
+} DQ;
+
+void init(DQ* p);
+void dqinsert_head(DQ * p, int val);
+void dqinsert_tail(DQ * p, int val);
+int dqdelete_head(DQ *p);
+int dqdelete_tail(DQ *p);
+void display(DQ *p);
+
+int main(){
+    int ch, x, k;
+    DQ *dq = (DQ *) malloc(sizeof(DQ));
+    init(dq);
+    while (1)
+    {
+        printf("\n1: Insert head\n2: Insert tail\n3: Delete Head\n4: Delete Tail\n5: Display\n6: Exit\n\nEnter your choice: ");
+        scanf("%d", &ch);
+        switch (ch) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &x);
+                dqinsert_head(dq, x);
+                display(dq);
+                break;
+            case 2:
+                printf("Enter value: ");
+                scanf("%d", &x);
+                dqinsert_tail(dq, x);
+                display(dq);            
+                break;
+            case 3:
+                dqdelete_head(dq);
+                display(dq);  
+                break;
+            case 4:
+                dqdelete_tail(dq);
+                display(dq);  
+                break;
+            case 5:
+                display(dq);
+                break;
+            case 6:
+                free(dq); 
+                exit(0);
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+    return 0;
+}
+
+void init(DQ* p){
+    p->front = p->rear = NULL;
+}
+void dqinsert_head(DQ * p, int val){
+    NODE *temp = (NODE *) malloc(sizeof(NODE));
+    temp->data = val;
+    temp->next = temp->prev = NULL;
+    if(p->front == NULL){
+        p->front = p->rear = temp;
+    }
+    else {
+        temp->next = p->front;
+        p->front->prev = temp;
+        p->front = temp;
+    }
+    printf("Enqueue successful: %d\n", val);
+}
+
+void dqinsert_tail(DQ * p, int val){
+    NODE *temp = (NODE *) malloc(sizeof(NODE));
+    temp->data = val;
+    temp->next = temp->prev = NULL;
+    if(p->front == NULL){
+        p->front = p->rear = temp;
+    }
+    else {
+        p->rear->next = temp;
+        temp->prev = p->rear;
+        p->rear = temp;
+    }
+    printf("Enqueue successful: %d\n", val);
+}
+int dqdelete_head(DQ *p){
+    int val;
+    NODE *temp = p->front;
+    if(p->front == NULL) {
+        printf("Empty dq\n");
+        return -1;
+    }
+    else if(p->front == p->rear){
+        val = p->front->data;
+        free(p->front);
+        p->front = p->rear = NULL;
+    }
+    else {
+        val = temp->data;
+        p->front = temp->next;
+        p->front->prev = NULL;
+        free(temp);
+    }
+    printf("Dequeue successful: %d\n", val);
+    return val;
+}
+int dqdelete_tail(DQ *p) {
+    int val;
+    NODE *temp = p->rear;
+    if(p->rear == NULL) {
+        printf("Empty dq\n");
+        return -1;
+    }
+    else if(p->front == p->rear){
+        val = p->front->data;
+        free(p->front);
+        p->front = p->rear = NULL;
+    }
+    else {
+        val = temp->data;
+        p->rear = temp->prev;
+        p->rear->next = NULL;
+        free(temp);
+    }
+    printf("Dequeue successful: %d\n", val);
+    return val;
+}
+void display(DQ *p){
+    NODE *temp = p->front;
+    if(p->front == NULL) {
+        printf("Empty dq");
+        return;
+    }
+    printf("The elements are: ");
+    while (temp!=p->rear) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("%d\n\n", temp->data);
+}

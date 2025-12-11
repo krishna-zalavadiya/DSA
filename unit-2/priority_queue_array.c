@@ -1,94 +1,229 @@
+/* priority queues - extension of queue where every item has priority associated to it
+2 types = ascending(item with lowest priority is removed) and descending(item with highest priority is removed)
+*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ priority queues implementation using arrays ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+// descending priority queue
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#define MAX 100
-
-typedef struct {
+#define max 10
+typedef struct priorityq
+{
     int data;
-    int priority;
-} Element;
+    int p;
+} PQ;
 
-typedef struct {
-    Element arr[MAX];
-    int size;
-} PriorityQueue;
+PQ pq[max];
+int size = 0;
 
-// Initialize
-void init(PriorityQueue *pq) {
-    pq->size = 0;
-}
-
-// Check if empty
-int isEmpty(PriorityQueue *pq) {
-    return pq->size == 0;
-}
-
-// Enqueue
-void enqueue(PriorityQueue *pq, int value, int priority) {
-    if (pq->size == MAX) {
-        printf("Queue is full!\n");
-        return;
+void enqueue(int data, int priority);
+int dequeue();
+void display();
+int main()
+{
+    int ch, data, priority, res;
+    while (1)
+    {
+        printf("\n 1. enqueue\n 2. dequeue\n 3. display\n");
+        printf("enter your choice\n");
+        scanf("%d", &ch);
+        switch (ch)
+        {
+        case 1:
+            printf("enter element to the queue\n");
+            scanf("%d", &data);
+            printf("enter the priority of the element\n");
+            scanf("%d", &priority);
+            enqueue(data, priority);
+            break;
+        case 2:
+            res = dequeue();
+            if (res == 0)
+                printf("queue is empty\n");
+            else
+                printf("deleted element is %d\n", res);
+            break;
+        case 3:
+            display();
+            break;
+        default:
+            exit(0);
+        }
     }
-    pq->arr[pq->size].data = value;
-    pq->arr[pq->size].priority = priority;
-    pq->size++;
-    printf("Inserted %d with priority %d\n", value, priority);
-}
-
-// Dequeue (remove highest priority)
-int dequeue(PriorityQueue *pq) {
-    if (isEmpty(pq)) {
-        printf("Queue is empty!\n");
-        return -1;
-    }
-
-    // Find index of element with highest priority (lowest priority value)
-    int highest = 0;
-    for (int i = 1; i < pq->size ; i++) {
-        if (pq->arr[i].priority < pq->arr[highest].priority)
-            highest = i;
-    }
-
-    int value = pq->arr[highest].data;
-
-    // Shift elements to fill the gap
-    for (int i = highest; i < pq->size - 1; i++) {
-        pq->arr[i] = pq->arr[i + 1];
-    }
-
-    pq->size--;
-    return value;
-}
-
-// Display
-void display(PriorityQueue *pq) {
-    if (isEmpty(pq)) {
-        printf("Queue is empty!\n");
-        return;
-    }
-    printf("Priority Queue: ");
-    for (int i = 0; i < pq->size; i++) {
-        printf("(%d,p=%d) ", pq->arr[i].data, pq->arr[i].priority);
-    }
-    printf("\n");
-}
-
-// Main for testing
-int main() {
-    PriorityQueue pq;
-    init(&pq);
-
-    enqueue(&pq, 10, 3);
-    enqueue(&pq, 20, 1);
-    enqueue(&pq, 30, 2);
-    display(&pq);
-
-    printf("Dequeued: %d\n", dequeue(&pq));
-    display(&pq);
-
     return 0;
 }
 
+void enqueue(int data, int priority)
+{
+    if (size == max)
+        printf("queue overloaded\n");
+    else
+    {
+        pq[size].data = data;
+        pq[size].p = priority;
+        size++;
+
+        // sorting the queue based on priority
+        for (int i = size - 1; i >0; i--)
+        {
+            if (pq[i].p > pq[i - 1].p) // if element with index 3 has higher priority than 2...swap them
+            {
+                PQ temp = pq[i];
+                pq[i] = pq[i - 1];
+                pq[i - 1] = temp;
+            }
+        }
+    }
+}
+
+int dequeue()
+{
+    if (size == 0)
+        return 0;
+    else
+    {
+        int data = pq[0].data;
+        for (int i = 0; i < size; i++)
+            pq[i] = pq[i + 1];
+        size--;
+        return data;
+    }
+}
+
+void display()
+{
+    if (size == 0)
+        printf("empty priority queue\n");
+    else
+    {
+        for (int i = 0; i < size; i++)
+            printf("ele = %d and p = %d\n", pq[i].data, pq[i].p);
+    }
+}
+ */
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~priority queues with linked list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#include <stdio.h>
+#include <stdlib.h>
+#define max 10
+typedef struct priorityq
+{
+    int data;
+    int p;
+    struct priorityq *link;
+} PQ;
+
+PQ *front = NULL;
+
+PQ *create_node(int data,int priority)
+{
+    PQ *temp = (PQ *)malloc(sizeof(PQ));
+    temp->data = data;
+    temp->p = priority;
+    temp->link = NULL;
+}
+void enqueue(int data, int priority);
+int dequeue();
+void display();
+int main()
+{
+    int ch, data, priority, res;
+    while (1)
+    {
+        printf("\n 1. enqueue\n 2. dequeue\n 3. display\n");
+        printf("enter your choice\n");
+        scanf("%d", &ch);
+        switch (ch)
+        {
+        case 1:
+            printf("enter element to the queue\n");
+            scanf("%d", &data);
+            printf("enter the priority of the element\n");
+            scanf("%d", &priority);
+            enqueue(data, priority);
+            break;
+        case 2:
+            res = dequeue();
+            if (res == 0)
+                printf("queue is empty\n");
+            else
+                printf("deleted element is %d\n", res);
+            break;
+        case 3:
+            display();
+            break;
+        default:
+            exit(0);
+        }
+    }
+    return 0;
+}
+
+void enqueue(int data, int priority)
+{
+    PQ *temp = create_node(data,priority);
+    if(front == NULL)
+        front = temp;
+    else
+    {
+        PQ *pres = front;
+        while(pres->link != NULL && pres->link->p > priority)
+            pres=pres->link;
+        temp->link = pres->link;
+        pres->link = temp;  
+    }
+}
+
+int dequeue()
+{
+    if(front == NULL)
+    {
+        printf("the queue is empty\n");
+        return 0;
+    }
+    else
+    {
+        PQ *p = front;
+        int data = p->data;
+        front = front->link;
+        free(p);
+        return data;
+    }
+}
+
+void display()
+{
+    if(front == NULL)
+    {
+        printf("the queue is empty\n");
+    }
+    else
+    {
+        PQ *temp  = front;
+        while(temp != NULL)
+        {
+            printf("%d value of priority %d\n",temp->data,temp->p);
+            temp = temp->link;
+        }
+    }
+}
 
 
 
+
+
+void enqueue(int data,int priority)
+{
+    PQ *temp = create_node(data,priority);
+    if(front == NULL)
+        front = temp;
+    else
+    {
+        PQ *p = front;
+        while(p->link != NULL && p->link->p > priority)
+            p = p->link;
+        temp->link = p->link;
+        p->link = temp;
+    }
+}

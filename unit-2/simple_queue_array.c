@@ -33,8 +33,8 @@ void enqueue(queue* q, int data)
         printf("Queue is full\n");
         return;
     }
-    
-    q->front++;//initially front and rear -1 so incrementing both
+    if(q->front == -1)//if first element is being inserted
+        q->front = 0;
     q->rear++;
     q->array[q->rear] = data;
     printf("%d enqueued to queue\n", data);
